@@ -1,0 +1,197 @@
+from pprint IMPORT pprint
+
+from typing IMPORT List
+
+from appJar IMPORT gui
+
+
+
+SET app TO gui("Caeser Cipher")
+
+app.addLabel("title1", "Encrypter and Decrypter")
+
+app.addLabelEntry("Text to be encoded/decoded")
+
+app.addLabelEntry("offset")
+
+app.addOptionBox("encode/decode",["encode","decode"])
+
+app.addLabel("title2", "Encoded/Decoded text: ")
+
+app.setSize("400x400")
+
+SET item TO ''
+
+SET library TO 'abcdefghijklmnopqrstuvwxyz'
+
+SET LIBRARY TO 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+
+
+
+DEFINE FUNCTION spliter(INPUT, output):
+
+    FOR cha IN INPUT:
+
+        output.append(cha)
+
+#pOUTPUT(ssplit)
+
+
+
+DEFINE FUNCTION isletter(letter):
+
+    IF letter IN library or letter IN LIBRARY:
+
+        RETURN True
+
+    ELSE:
+
+        RETURN False
+
+
+
+DEFINE FUNCTION isLower(letter):
+
+    IF letter IN library:
+
+        RETURN True
+
+    ELSE:
+
+        RETURN False
+
+
+
+#encrypts or decrypts INPUT1
+
+DEFINE FUNCTION moving(ssplit : List[str], moveby, library : List[str], LIBRARY : List[str]):    #get place of each letter IN ssplit and add number moveby to its place IN library
+
+    SET newList TO []
+
+    FOR item IN ssplit:
+
+        IF isletter(item):
+
+            IF isLower(item):
+
+                SET place TO library.index(item)
+
+                place += moveby
+
+                IF place >= 26:
+
+                    SET place TO place % -26
+
+                IF place <= -1:
+
+                    SET place TO place % 26
+
+                SET item TO library[place]
+
+                #OUTPUT("%s %d"%(item, place))
+
+                newList.append(item)
+
+            ELSE:
+
+                SET place TO LIBRARY.index(item)
+
+                place += moveby
+
+                IF place >= 26:
+
+                    SET place TO place % -26
+
+                IF place <= -1:
+
+                    SET place TO place % 26
+
+                SET item TO LIBRARY[place]
+
+                pOUTPUT("%s %d"%(item, place))
+
+                newList.append(item)
+
+        ELSE:
+
+            newList.append(item)
+
+    RETURN newList
+
+
+
+#on button press
+
+DEFINE FUNCTION onButtonPress():
+
+    global library, LIBRARY, INPUT1, moveby
+
+    
+
+    #decide whether encoding
+
+    IF ('encode') EQUALS str(app.getOptionBox("encode/decode")):
+
+        SET PreEncoding TO True
+
+    ELSE:
+
+        SET PreEncoding TO False
+
+
+
+    #get the value FOR ssplit and moveby
+
+    SET INPUT1 TO str(app.getEntry("Text to be encoded/decoded")) 
+
+    SET ssplit : List[str] TO []
+
+    SET isEncoding TO PreEncoding
+
+    
+
+    SET preMoveby TO 0
+
+    SET preMoveby TO str(app.getEntry("offset"))
+
+    IF isletter(preMoveby):
+
+        IF isLower(preMoveby):
+
+            SET preMoveby TO library.index(preMoveby) + 1
+
+        ELSE:
+
+            SET preMoveby TO LIBRARY.index(preMoveby) + 1
+
+    ELSE:
+
+        SET preMoveby TO int(app.getEntry("offset"))
+
+
+
+    SET moveby TO preMoveby 
+
+    IF not isEncoding: moveby *= -1
+
+    spliter(INPUT1,ssplit)  #ssplit is modified
+
+
+
+    SET newList TO moving(ssplit, moveby, library, LIBRARY)#encoding/decoding function 
+
+    OUTPUT(''.join(newList))
+
+    SET newnewList TO (''.join(newList))
+
+    app. setLabel("title2","Encoding/Decoding Complete: "+str(newnewList))
+
+
+
+
+
+app.addButton("Process", onButtonPress)
+
+app.go()
